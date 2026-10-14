@@ -38,7 +38,8 @@ ensure_dependencies()
 import requests
 from colorama import Fore, Style, init
 
-__version__ = "0.2.0"
+# Kept in lockstep with censortrace/__init__.py so `--version` never lies.
+__version__ = "2.0.0"
 
 # --- Constants ---
 DEFAULT_DOMAIN = "youtube.com"
