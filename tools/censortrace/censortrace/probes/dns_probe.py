@@ -35,11 +35,14 @@ class DNSProbe(CensorshipProbe):
         try:
             resp = await dns.query_udp(server, self.cfg.domain, qtype,
                                        timeout=self.cfg.dns_timeout)
+        except asyncio.TimeoutError:
+            return {"server": server, "error": "TimeoutError", "timeout": True}
         except Exception as exc:
             return {"server": server, "error": f"{type(exc).__name__}: {exc}"}
         tid_mismatch = bool(resp.flags & 0x8000)
         return {
             "server": server,
+            "timeout": False,
             "rcode": resp.rcode,
             "ips": resp.ips(),
             "ttls": [a.ttl for a in resp.answers],

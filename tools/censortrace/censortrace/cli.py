@@ -37,6 +37,24 @@ app = typer.Typer(
 )
 console = Console()
 
+
+def _version_callback(value: bool) -> None:
+    """`censortrace --version` at the top level (in addition to `scan --version`)."""
+    if value:
+        console.print(f"CensorTrace {__version__}")
+        raise typer.Exit()
+
+
+@app.callback()
+def _main(
+    version: bool = typer.Option(
+        False, "--version", "-V", callback=_version_callback, is_eager=True,
+        help="Show version and exit.",
+    ),
+) -> None:
+    """CensorTrace v2 — asynchronous, plugin-based censorship diagnostics."""
+
+
 VERDICT_STYLE = {
     Verdict.PASS: "bold green",
     Verdict.WARN: "yellow",
@@ -190,7 +208,7 @@ def probe(
     raise typer.Exit(code)
 
 
-@app.command()
+@app.command("probes")
 def list_probes() -> None:
     """Show the plugin registry."""
     _load_probes()
@@ -204,9 +222,9 @@ def list_probes() -> None:
 
 @app.command()
 def legacy(
-    args: list[str] = typer.Argument(None, help="Passed through to v0.2 script."),
+    args: list[str] = typer.Argument(None, help="Passed through to the v1 script."),
 ) -> None:
-    """Invoke the original argparse-based censortrace.py unchanged."""
+    """Invoke the original v1 argparse-based censortrace.py unchanged."""
     import subprocess
     import sys
     from pathlib import Path
